@@ -1,4 +1,4 @@
-# [WIP]Tukune [![Build Status](https://travis-ci.org/gin0606/tukune.svg?branch=master)](https://travis-ci.org/gin0606/tukune)
+# [WIP]Tukune [![Build Status](https://travis-ci.org/gin0606/tukune.svg?branch=master)](https://travis-ci.org/gin0606/tukune) [![Coverage Status](https://coveralls.io/repos/github/gin0606/tukune/badge.svg?branch=master)](https://coveralls.io/github/gin0606/tukune?branch=master)
 
 Create a pull request if there is a difference via Github API.
 
