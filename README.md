@@ -1,4 +1,4 @@
-# [WIP]Tukune
+# [WIP]Tukune [![Build Status](https://travis-ci.org/gin0606/tukune.svg?branch=master)](https://travis-ci.org/gin0606/tukune)
 
 Create a pull request if there is a difference via Github API.
 
