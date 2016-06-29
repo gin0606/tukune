@@ -5,15 +5,15 @@ module Tukune
     end
 
     def added_files
-      changed_files.select {|type, _| type == "A" }.map { |_, name| name }
+      changed_files.select { |type, _| type == 'A' }.map { |_, name| name }
     end
 
     def modified_files
-      changed_files.select {|type, _| type == "M" }.map { |_, name| name }
+      changed_files.select { |type, _| type == 'M' }.map { |_, name| name }
     end
 
     def deleted_files
-      changed_files.select {|type, _| type == "D" }.map { |_, name| name }
+      changed_files.select { |type, _| type == 'D' }.map { |_, name| name }
     end
 
     def changed_files

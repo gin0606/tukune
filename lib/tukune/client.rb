@@ -12,7 +12,7 @@ module Tukune
       @base_branch = base_branch
     end
 
-    def add_file(path, message=nil)
+    def add_file(path, message = nil)
       client.create_contents(
         repository_name,
         path,
@@ -22,7 +22,7 @@ module Tukune
       )
     end
 
-    def update_file(path, message=nil)
+    def update_file(path, message = nil)
       content = client.contents(repository_name, path: path, ref: feature_branch)
       client.update_contents(
         repository_name,
@@ -34,24 +34,24 @@ module Tukune
       )
     end
 
-    def delete_file(path, message=nil)
+    def delete_file(path, message = nil)
       content = client.contents(repository_name, path: path, ref: feature_branch)
       client.delete_contents(
         repository_name,
         path,
         message || "Delete #{path}",
         content[:sha],
-        branch: feature_branch,
+        branch: feature_branch
       )
     end
 
-    def create_pull_request(title, body)
+    def create_pull_request(_title, _body)
       client.create_pull_request(
         repository_name,
         base_branch,
         feature_branch,
-        "Pull Request Title",
-        "Pull Request Body"
+        'Pull Request Title',
+        'Pull Request Body'
       )
     end
 
@@ -68,7 +68,7 @@ module Tukune
     end
 
     def create_feature_branch
-      return if client.refs(repository_name).any? {|ref| ref[:ref] == "refs/heads/#{feature_branch_name}" }
+      return if client.refs(repository_name).any? { |ref| ref[:ref] == "refs/heads/#{feature_branch_name}" }
       sha = client.ref(repository_name, "heads/#{base_branch}")[:object][:sha]
       client.create_ref(repository_name, "heads/#{feature_branch_name}", sha)
     end
