@@ -6,15 +6,15 @@ module Tukune
           puts "this branch is tukune"
           return
         end
-        git = Tukune::Git.new
-        if git.nothing_to_commit?
+        diff = Tukune::Git::Diff.name_status
+        if diff.nothing_to_commit?
           puts "nothing to commit, working directory clean"
           return
         end
-        client = Tukune::Client.new(repository_name, current_branch)
-        git.added_files.each {|file| client.add_file(file) }
-        git.modified_files.each {|file| client.update_file(file) }
-        git.deleted_files.each {|file| client.delete_file(file) }
+        client = Tukune::Client.new(Tukune.configuration)
+        diff.added_files.each {|file| client.add_file(file) }
+        diff.modified_files.each {|file| client.update_file(file) }
+        diff.deleted_files.each {|file| client.delete_file(file) }
         client.create_pull_request(options[:title], options[:body])
       end
 
