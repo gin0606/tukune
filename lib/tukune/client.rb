@@ -5,11 +5,12 @@ module Tukune
   class Client
     include Mem
 
-    attr_reader :repository_name, :base_branch
+    attr_reader :repository_name, :base_branch, :feature_branch_name
 
-    def initialize(repository_name, base_branch)
-      @repository_name = repository_name
-      @base_branch = base_branch
+    def initialize(configuration)
+      @repository_name = configuration.repository_name
+      @base_branch = configuration.current_branch
+      @feature_branch_name = configuration.feature_branch
     end
 
     def add_file(path, message=nil)
@@ -73,10 +74,5 @@ module Tukune
       client.create_ref(repository_name, "heads/#{feature_branch_name}", sha)
     end
     memoize :create_feature_branch
-
-    def feature_branch_name
-      "tukune_#{base_branch}"
-    end
-    memoize :feature_branch_name
   end
 end
