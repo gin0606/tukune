@@ -78,13 +78,5 @@ module Tukune
       "tukune_#{base_branch}"
     end
     memoize :feature_branch_name
-
-    # def repository_name
-    #   ENV["TRAVIS_REPO_SLUG"] || "#{ENV["CIRCLE_PROJECT_USERNAME"]}/#{ENV["CIRCLE_PROJECT_REPONAME"]}"
-    # end
-    #
-    # def current_branch
-    #   ENV["TRAVIS_BRANCH"] || ENV['CIRCLE_BRANCH'] || `git symbolic-ref --short HEAD`.strip
-    # end
   end
 end
