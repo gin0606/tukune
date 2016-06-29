@@ -2,6 +2,10 @@ module Tukune
   class CLI
     class << self
       def start(options)
+        if tukune?
+          puts "this branch is tukune"
+          return
+        end
         git = Tukune::Git.new
         if git.nothing_to_commit?
           puts "nothing to commit, working directory clean"
@@ -12,6 +16,10 @@ module Tukune
         git.modified_files.each {|file| client.update_file(file) }
         git.deleted_files.each {|file| client.delete_file(file) }
         client.create_pull_request(options[:title], options[:body])
+      end
+
+      def tukune?
+        current_branch.start_with?("tukune_")
       end
 
       def repository_name
