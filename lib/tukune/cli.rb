@@ -11,7 +11,7 @@ module Tukune
           puts "nothing to commit, working directory clean"
           return
         end
-        client = Tukune::Client.new(repository_name, current_branch)
+        client = Tukune::Client.new(Tukune.configuration)
         diff.added_files.each {|file| client.add_file(file) }
         diff.modified_files.each {|file| client.update_file(file) }
         diff.deleted_files.each {|file| client.delete_file(file) }
