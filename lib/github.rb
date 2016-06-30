@@ -3,7 +3,7 @@ require 'mem'
 class Github
   include Mem
 
-  def initialize(repo, current_branch='master')
+  def initialize(repo, current_branch = 'master')
     @repo = repo
     @current_branch = current_branch
   end
@@ -27,21 +27,8 @@ class Github
   end
 
   def commit(message)
-    changed_blobs = added_files.map do |path|
-      content = Base64.encode64(File.read(path))
-      sha = client.create_blob(@repo, content, 'base64')
-      { path: path, mode: '100644', type: 'blob', sha: sha }
-    end
     commit = client.commit(@repo, current_branch[:object][:sha])
-
     current_tree = client.tree(@repo, commit[:commit][:tree][:sha], recursive: true)
-    unless deleted_files.empty?
-      changed_blobs = current_tree.to_h
-      changed_blobs.delete_if {|tree| added_files.include?(tree[:path]) }
-      changed_blobs.delete_if {|tree| deleted_files.include?(tree[:path]) }
-      changed_blobs.concat(current_tree)
-    end
-
     tree = client.create_tree(@repo, changed_blobs, base_tree: current_tree[:sha])
     client.create_commit(@repo, message, tree[:sha], current_branch[:object][:sha])
 
@@ -50,6 +37,21 @@ class Github
   end
 
   private
+
+  def changed_blobs
+    changed_blobs = added_files.map do |path|
+      content = Base64.encode64(File.read(path))
+      sha = client.create_blob(@repo, content, 'base64')
+      { path: path, mode: '100644', type: 'blob', sha: sha }
+    end
+    unless deleted_files.empty?
+      changed_blobs = current_tree.to_h
+      changed_blobs.delete_if { |tree| added_files.include?(tree[:path]) }
+      changed_blobs.delete_if { |tree| deleted_files.include?(tree[:path]) }
+      changed_blobs.concat(current_tree)
+    end
+    changed_blobs
+  end
 
   def current_branch
     client.ref(@repo, "heads/#{@current_branch}")
@@ -69,5 +71,4 @@ class Github
     []
   end
   memoize :deleted_files
-
 end
