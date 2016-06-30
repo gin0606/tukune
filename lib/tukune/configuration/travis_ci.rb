@@ -12,8 +12,7 @@ module Tukune
       end
 
       def pull_request?
-        p ENV["TRAVIS_PULL_REQUEST"]
-        ENV["TRAVIS_PULL_REQUEST"]
+        ENV["TRAVIS_PULL_REQUEST"] != "false"
       end
     end
   end
