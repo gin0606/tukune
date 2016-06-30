@@ -3,10 +3,17 @@ language: ruby
 cache: bundler
 rvm:
   - 2.3.1
-before_install: gem install bundler -v 1.12.5
+before_install:
+  - gem install bundler -v 1.12.5
+  - chmod +x bin/tukune
 
-after_script:
-  - bin/tukune --title 'Pull Request Title' --body 'Pull Request Body'
+script:
+  - bundle exec rake
+  - bundle exec rubocop
+
+after_failure:
+  - bundle exec rubocop --auto-correct
+  - bin/tukune --title '[BOT]bundle exec rubocop --auto-correct' --body 'This pull request made by tukune'
 
 notifications:
   email: false

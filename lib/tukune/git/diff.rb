@@ -12,7 +12,7 @@ module Tukune
       end
 
       def added_files
-        changed_files.select {|type, _| type == "A" }.map { |_, name| name }
+        `git ls-files --others --exclude-standard`.strip.split("\n")
       end
 
       def modified_files
