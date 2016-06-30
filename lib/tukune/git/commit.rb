@@ -18,6 +18,10 @@ module Tukune
         blobs[file_path] = sha
       end
 
+      def delete(file_path)
+        delete_files << file_path
+      end
+
       def commit(message)
         changed_files = blobs.map { |path, _| path }
         changed_blobs = blobs.map do |file_path, sha|
@@ -30,9 +34,11 @@ module Tukune
         end
         current_blobs = current_tree[:tree].map { |e| e.to_h }
 
-        trees = current_blobs.delete_if { |blob| changed_files.include?(blob[:path]) } + changed_blobs
+        trees = current_blobs.delete_if { |blob| delete_files.include?(blob[:path]) }
+        trees = current_blobs.delete_if { |blob| changed_files.include?(blob[:path]) }
+        trees += changed_blobs
 
-        tree = client.create_tree(@repository_name, changed_blobs, base_tree: current_tree[:sha])
+        tree = client.create_tree(@repository_name, trees, base_tree: current_tree[:sha])
         commits << client.create_commit(@repository_name, message, tree[:sha], current_branch[:object][:sha])
       end
 
@@ -73,6 +79,11 @@ module Tukune
         {}
       end
       memoize :blobs
+
+      def delete_files
+        []
+      end
+      memoize :delete_files
 
       def client
         ::Octokit::Client.new
