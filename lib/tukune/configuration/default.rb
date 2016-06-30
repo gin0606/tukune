@@ -1,3 +1,5 @@
+require 'mem'
+
 module Tukune
   class Configuration
     class Default
