@@ -9,7 +9,7 @@ class Github
   end
 
   def branch(name)
-    client.create_ref(@repository_name, "heads/#{name}", current_branch[:object][:sha])
+    client.create_ref(@repo, "heads/#{name}", current_branch[:object][:sha])
   end
 
   def checkout(branch)
@@ -28,11 +28,16 @@ class Github
 
   def commit(message)
     if deleted_files.empty?
-      # current_branchのtree取得する
-      # added_filesのblob作る
-      # client.create_tree(@repository_name, changed_blobs, base_tree: current_tree[:sha])
-      # client.create_commit(@repository_name, message, tree[:sha], current_branch[:object][:sha])
+      changed_blobs = added_files.map do |path|
+        content = Base64.encode64(File.read(path))
+        sha = client.create_blob(@repo, content, 'base64')
+        { path: path, mode: '100644', type: 'blob', sha: sha }
+      end
 
+      commit = client.commit(@repo, current_branch[:object][:sha])
+      current_tree = client.tree(@repo, commit[:commit][:tree][:sha], recursive: true)
+      tree = client.create_tree(@repo, changed_blobs, base_tree: current_tree[:sha])
+      client.create_commit(@repo, message, tree[:sha], current_branch[:object][:sha])
     else
     end
 
