@@ -50,14 +50,14 @@ module Tukune
         commits << client.create_commit(@repository_name, message, tree[:sha], current_branch[:object][:sha])
       end
 
-      def pull_request
+      def pull_request(title, body)
         create_feature_branch(@feature_branch, commits.last[:sha])
         client.create_pull_request(
           @repository_name,
           @current_branch,
           @feature_branch,
-          "Pull Request Title",
-          "Pull Request Body"
+          title,
+          body
         )
       end
 
