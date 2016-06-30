@@ -39,6 +39,8 @@ class Github
   private
 
   def changed_blobs
+    commit = client.commit(@repo, current_branch[:object][:sha])
+    current_tree = client.tree(@repo, commit[:commit][:tree][:sha], recursive: true)
     changed_blobs = added_files.map do |path|
       content = Base64.encode64(File.read(path))
       sha = client.create_blob(@repo, content, 'base64')
