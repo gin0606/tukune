@@ -3,18 +3,17 @@ require 'mem'
 class Github
   include Mem
 
-  def initialize(repo)
+  def initialize(repo, current_branch='master')
     @repo = repo
-    @current_branch_name = 'master'
+    @current_branch = current_branch
   end
 
   def branch(name)
-    ref = client.ref(@repo, "heads/#{@current_branch_name}")
-    client.create_ref(@repository_name, "heads/#{name}", ref[:object][:sha])
+    client.create_ref(@repository_name, "heads/#{name}", current_branch[:object][:sha])
   end
 
   def checkout(branch)
-    @current_branch_name = branch
+    @current_branch = branch
   end
 
   def add(path)
@@ -44,7 +43,7 @@ class Github
   private
 
   def current_branch
-    client.ref(@repository_name, "heads/#{@current_branch_name}")
+    client.ref(@repo, "heads/#{@current_branch}")
   end
 
   def create_blob(path)
