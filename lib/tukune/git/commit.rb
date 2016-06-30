@@ -19,18 +19,21 @@ module Tukune
       end
 
       def commit(message)
-        p current_tree
-        trees = blobs.map { |file_path, sha|
+        changed_files = blobs.map { |path, _| path }
+        changed_blobs = blobs.map do |file_path, sha|
           {
             path: file_path,
             mode: "100644",
             type: "blob",
             sha: sha
           }
-        }
+        end
+        current_blobs = current_tree[:tree].map { |e| e.to_h }
+
+        trees = current_blobs.delete_if { |blob| changed_files.include?(blob[:path]) } + changed_blobs
+
         tree = client.create_tree(@repository_name, trees)
-        commit = client.create_commit(@repository_name, message, tree[:sha], current_branch[:object][:sha])
-        feature_branch = create_feature_branch(@feature_branch, commit[:sha])
+        commits << client.create_commit(@repository_name, message, tree[:sha], current_branch[:object][:sha])
       end
 
       private
@@ -50,6 +53,10 @@ module Tukune
         client.create_ref(@repository_name, "heads/#{name}", sha)
       end
 
+      def commits
+        []
+      end
+      memoize :commits
 
       def blobs
         {}
