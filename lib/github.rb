@@ -36,7 +36,7 @@ class Github
 
     current_tree = client.tree(@repo, commit[:commit][:tree][:sha], recursive: true)
     unless deleted_files.empty?
-      changed_blobs = current_tree
+      changed_blobs = current_tree.to_h
       changed_blobs.delete_if {|tree| added_files.include?(tree[:path]) }
       changed_blobs.delete_if {|tree| deleted_files.include?(tree[:path]) }
       changed_blobs.concat(current_tree)
