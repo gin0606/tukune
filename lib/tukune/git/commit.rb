@@ -36,6 +36,17 @@ module Tukune
         commits << client.create_commit(@repository_name, message, tree[:sha], current_branch[:object][:sha])
       end
 
+      def pull_request
+        create_feature_branch(@feature_branch, commits.last[:sha])
+        client.create_pull_request(
+          @repository_name,
+          @current_branch,
+          @feature_branch,
+          "Pull Request Title",
+          "Pull Request Body"
+        )
+      end
+
       private
 
       def current_tree
