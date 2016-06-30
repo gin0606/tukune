@@ -13,7 +13,7 @@ script:
 
 after_failure:
   - bundle exec rubocop --auto-correct
-  - OCTOKIT_ACCESS_TOKEN=1e7f6ac1cb81bbdc9527aa803294dbb5bfa25383 bin/tukune --title '[BOT]bundle exec rubocop --auto-correct' --body 'This pull request made by tukune'
+  - bin/tukune --title '[BOT]bundle exec rubocop --auto-correct' --body 'This pull request made by tukune'
 
 notifications:
   email: false
