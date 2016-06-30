@@ -37,6 +37,7 @@ module Tukune
       def current_branch
         client.ref(@repository_name, "heads/#{@current_branch}")
       end
+      memoize :current_branch
 
       def create_feature_branch(name, sha)
         client.create_ref(@repository_name, "heads/#{name}", sha)
