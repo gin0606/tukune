@@ -6,8 +6,8 @@ module Tukune
       include Mem
 
       def repository_name
-        raise "You need to set TUKUNE_REPONAME in environment variables" unless ENV["TUKUNE_REPONAME"]
-        ENV["TUKUNE_REPONAME"]
+        raise 'You need to set TUKUNE_REPONAME in environment variables' unless ENV['TUKUNE_REPONAME']
+        ENV['TUKUNE_REPONAME']
       end
 
       def current_branch
@@ -15,7 +15,7 @@ module Tukune
       end
 
       def feature_branch_prefix
-        "tukune_"
+        'tukune_'
       end
 
       def feature_branch

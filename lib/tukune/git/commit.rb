@@ -26,8 +26,8 @@ module Tukune
         changed_blobs = blobs.map do |file_path, sha|
           {
             path: file_path,
-            mode: "100644",
-            type: "blob",
+            mode: '100644',
+            type: 'blob',
             sha: sha
           }
         end
@@ -37,7 +37,7 @@ module Tukune
         else
           # FIXME: 編集したファイルが正しくcommitされない
           changed_files = blobs.map { |path, _| path }
-          current_blobs = current_tree[:tree].map { |e| e.to_h }
+          current_blobs = current_tree[:tree].map(&:to_h)
 
           trees = current_blobs
           trees = trees.delete_if { |blob| delete_files.include?(blob[:path]) }
