@@ -19,6 +19,7 @@ module Tukune
       end
 
       def commit(message)
+        p current_tree
         trees = blobs.map { |file_path, sha|
           {
             path: file_path,
@@ -33,6 +34,12 @@ module Tukune
       end
 
       private
+
+      def current_tree
+        commit = client.commit(@repository_name, current_branch[:object][:sha])
+        client.tree(@repository_name, commit[:commit][:tree][:sha], recursive: true)
+      end
+      memoize :current_tree
 
       def current_branch
         client.ref(@repository_name, "heads/#{@current_branch}")
