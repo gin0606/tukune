@@ -12,11 +12,19 @@ module Tukune
           return
         end
         c = Tukune::Git::Commit.new(Tukune.configuration)
-        diff.modified_files.each {|f| c.add(f) }
-        diff.added_files.each {|f| c.add(f) }
+        diff.modified_files.each do |f|
+          c.add(f)
+          puts "Create #{f} blob."
+        end
+        diff.added_files.each do |f|
+          c.add(f)
+          puts "Create #{f} blob."
+        end
         # diff.deleted_files.each {|f| c.delete(f) }
         c.commit("#{options[:title]}\n\n#{options[:body]}")
+        puts "Create commit"
         c.pull_request(options[:title], options[:body])
+        puts "Create pull request"
       end
 
       def tukune?
