@@ -11,11 +11,12 @@ module Tukune
           puts "nothing to commit, working directory clean"
           return
         end
-        client = Tukune::Client.new(Tukune.configuration)
-        diff.added_files.each {|file| client.add_file(file) }
-        diff.modified_files.each {|file| client.update_file(file) }
-        diff.deleted_files.each {|file| client.delete_file(file) }
-        client.create_pull_request(options[:title], options[:body])
+        c = Tukune::Git::Commit.new(Tukune.configuration)
+        diff.modified_files.each {|f| c.add(f) }
+        diff.added_files.each {|f| c.add(f) }
+        # diff.deleted_files.each {|f| c.delete(f) }
+        c.commit("#{options[:title]}\n\n#{options[:body]}")
+        c.pull_request(options[:title], options[:body])
       end
 
       def tukune?
