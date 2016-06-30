@@ -23,7 +23,6 @@ module Tukune
       end
 
       def commit(message)
-        changed_files = blobs.map { |path, _| path }
         changed_blobs = blobs.map do |file_path, sha|
           {
             path: file_path,
@@ -32,13 +31,22 @@ module Tukune
             sha: sha
           }
         end
-        current_blobs = current_tree[:tree].map { |e| e.to_h }
 
-        trees = current_blobs.delete_if { |blob| delete_files.include?(blob[:path]) }
-        trees = current_blobs.delete_if { |blob| changed_files.include?(blob[:path]) }
-        trees += changed_blobs
+        if delete_files.empty?
+          tree = client.create_tree(@repository_name, changed_blobs, base_tree: current_tree[:sha])
+        else
+          # FIXME: 編集したファイルが正しくcommitされない
+          changed_files = blobs.map { |path, _| path }
+          current_blobs = current_tree[:tree].map { |e| e.to_h }
 
-        tree = client.create_tree(@repository_name, trees, base_tree: current_tree[:sha])
+          trees = current_blobs
+          trees = trees.delete_if { |blob| delete_files.include?(blob[:path]) }
+          trees = trees.delete_if { |blob| changed_files.include?(blob[:path]) }
+          trees += changed_blobs
+
+          tree = client.create_tree(@repository_name, trees)
+        end
+
         commits << client.create_commit(@repository_name, message, tree[:sha], current_branch[:object][:sha])
       end
 
