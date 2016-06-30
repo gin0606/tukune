@@ -32,7 +32,7 @@ module Tukune
 
         trees = current_blobs.delete_if { |blob| changed_files.include?(blob[:path]) } + changed_blobs
 
-        tree = client.create_tree(@repository_name, trees)
+        tree = client.create_tree(@repository_name, changed_blobs, base_tree: current_tree[:sha])
         commits << client.create_commit(@repository_name, message, tree[:sha], current_branch[:object][:sha])
       end
 
