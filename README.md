@@ -1,4 +1,5 @@
-# [WIP]Tukune
+# Tukune
+[![Gem Version](https://badge.fury.io/rb/tukune.svg)](https://badge.fury.io/rb/tukune)
 [![Build Status](https://travis-ci.org/gin0606/tukune.svg?branch=master)](https://travis-ci.org/gin0606/tukune)
 [![Coverage Status](https://coveralls.io/repos/github/gin0606/tukune/badge.svg?branch=master)](https://coveralls.io/github/gin0606/tukune?branch=master)
 
