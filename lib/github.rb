@@ -27,19 +27,23 @@ class Github
   end
 
   def commit(message)
-    if deleted_files.empty?
-      changed_blobs = added_files.map do |path|
-        content = Base64.encode64(File.read(path))
-        sha = client.create_blob(@repo, content, 'base64')
-        { path: path, mode: '100644', type: 'blob', sha: sha }
-      end
-
-      commit = client.commit(@repo, current_branch[:object][:sha])
-      current_tree = client.tree(@repo, commit[:commit][:tree][:sha], recursive: true)
-      tree = client.create_tree(@repo, changed_blobs, base_tree: current_tree[:sha])
-      client.create_commit(@repo, message, tree[:sha], current_branch[:object][:sha])
-    else
+    changed_blobs = added_files.map do |path|
+      content = Base64.encode64(File.read(path))
+      sha = client.create_blob(@repo, content, 'base64')
+      { path: path, mode: '100644', type: 'blob', sha: sha }
     end
+    commit = client.commit(@repo, current_branch[:object][:sha])
+
+    current_tree = client.tree(@repo, commit[:commit][:tree][:sha], recursive: true)
+    unless deleted_files.empty?
+      changed_blobs = current_tree
+      changed_blobs.delete_if {|tree| added_files.include?(tree[:path]) }
+      changed_blobs.delete_if {|tree| deleted_files.include?(tree[:path]) }
+      changed_blobs.concat(current_tree)
+    end
+
+    tree = client.create_tree(@repo, changed_blobs, base_tree: current_tree[:sha])
+    client.create_commit(@repo, message, tree[:sha], current_branch[:object][:sha])
 
     added_files.clear
     deleted_files.clear
