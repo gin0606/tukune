@@ -33,15 +33,7 @@ module Tukune
       end
 
       def tukune?
-        current_branch.start_with?("tukune_")
-      end
-
-      def repository_name
-        ENV["TRAVIS_REPO_SLUG"] || "#{ENV["CIRCLE_PROJECT_USERNAME"]}/#{ENV["CIRCLE_PROJECT_REPONAME"]}"
-      end
-
-      def current_branch
-        ENV["TRAVIS_BRANCH"] || ENV['CIRCLE_BRANCH'] || `git symbolic-ref --short HEAD`.strip
+        Tukune.configuration.current_branch.start_with?("tukune_")
       end
     end
   end

@@ -10,6 +10,10 @@ module Tukune
         ENV["TUKUNE_REPONAME"]
       end
 
+      def tukune_branch?
+        current_branch.start_with?(feature_branch_prefix)
+      end
+
       def current_branch
         `git symbolic-ref --short HEAD`.strip
       end
