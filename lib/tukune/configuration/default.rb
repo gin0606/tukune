@@ -22,6 +22,10 @@ module Tukune
         feature_branch_prefix + current_branch
       end
       memoize :feature_branch
+
+      def pull_request?
+        false
+      end
     end
   end
 end

@@ -10,6 +10,10 @@ module Tukune
       def current_branch
         ENV['CIRCLE_BRANCH']
       end
+
+      def pull_request?
+        !ENV["CIRCLE_PR_NUMBER"].nil?
+      end
     end
   end
 end

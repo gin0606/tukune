@@ -10,6 +10,10 @@ module Tukune
       def current_branch
         ENV["TRAVIS_BRANCH"]
       end
+
+      def pull_request?
+        ENV["TRAVIS_PULL_REQUEST"]
+      end
     end
   end
 end
