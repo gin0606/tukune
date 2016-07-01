@@ -1,3 +1,4 @@
+require 'github'
 require 'tukune/cli'
 require 'tukune/configuration'
 require 'tukune/git/diff'
