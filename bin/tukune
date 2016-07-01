@@ -18,6 +18,10 @@ opt_parser = OptionParser.new do |opt|
     options[:body] = body
   end
 
+  opt.on('--enable-all') do |enable_all|
+    options[:enable_all] = enable_all
+  end
+
   opt.on('-h', '--help', 'help') do
     puts opt_parser
   end
