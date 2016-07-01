@@ -1,3 +1,4 @@
+require 'octokit'
 require 'mem'
 
 class Github
@@ -28,17 +29,29 @@ class Github
 
   def commit(message)
     commit = client.commit(@repo, current_branch[:object][:sha])
+    p commit
+    p current_branch
     current_tree = client.tree(@repo, commit[:commit][:tree][:sha], recursive: true)
     tree = client.create_tree(@repo, changed_blobs, base_tree: current_tree[:sha])
-    client.create_commit(@repo, message, tree[:sha], current_branch[:object][:sha])
+    new_commit = client.create_commit(@repo, message, tree[:sha], current_branch[:object][:sha])
+    client.update_branch(@repo, @current_branch, new_commit[:sha])
 
     added_files.clear
     deleted_files.clear
+
+    new_commit
   end
 
   def pull_request(base, title, body)
+    p(
+      @repo,
+      base,
+      @current_branch,
+      title,
+      body
+    )
     client.create_pull_request(
-      @repository_name,
+      @repo,
       base,
       @current_branch,
       title,
@@ -83,4 +96,9 @@ class Github
     []
   end
   memoize :deleted_files
+
+  def client
+    ::Octokit::Client.new
+  end
+  memoize :client
 end
