@@ -36,6 +36,16 @@ class Github
     deleted_files.clear
   end
 
+  def pull_request(base, title, body)
+    client.create_pull_request(
+      @repository_name,
+      base,
+      @current_branch,
+      title,
+      body
+    )
+  end
+
   private
 
   def changed_blobs
