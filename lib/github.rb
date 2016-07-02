@@ -34,7 +34,6 @@ class Github
   end
 
   def pull_request(base, title, body)
-    return
     client.create_pull_request(
       @repo,
       base,
