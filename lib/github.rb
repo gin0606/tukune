@@ -4,17 +4,53 @@ require 'mem'
 class Github
   include Mem
 
+  class BranchCache
+    include Mem
+
+    def initialize(repo)
+      @repo = repo
+      @cache = {}
+    end
+
+    def create(name, sha)
+      @cache[name] = client.create_ref(@repo, "heads/#{name}", sha)
+    end
+
+    def read(name)
+      @cache[name] = client.ref(@repo, "heads/#{name}")
+    end
+
+    def update(name, sha)
+      @cache[name] = client.update_branch(@repo, name, sha)
+    end
+
+    def delete(name)
+      ref = client.delete_ref(@repo, "heads/#{name}")
+      @cache.delete(name)
+      ref
+    end
+
+    private
+
+    def client
+      ::Octokit::Client.new
+    end
+    memoize :client
+  end
+
   def initialize(repo, current_branch = 'master')
     @repo = repo
-    @current_branch = current_branch
+    @current_branch_name = current_branch
+    @branch = BranchCache.new(repo)
   end
 
   def branch(name)
-    client.create_ref(@repo, "heads/#{name}", current_branch[:object][:sha])
+    current_branch = @branch.read(@current_branch_name)
+    @branch.create(name, current_branch[:object][:sha])
   end
 
   def checkout(branch)
-    @current_branch = branch
+    @current_branch_name = branch
   end
 
   def add(path)
@@ -22,11 +58,12 @@ class Github
   end
 
   def commit(message)
+    current_branch = @branch.read(@current_branch_name)
     commit = client.commit(@repo, current_branch[:object][:sha])
     current_tree = client.tree(@repo, commit[:commit][:tree][:sha], recursive: true)
     tree = client.create_tree(@repo, changed_blobs, base_tree: current_tree[:sha])
     new_commit = client.create_commit(@repo, message, tree[:sha], current_branch[:object][:sha])
-    client.update_branch(@repo, @current_branch, new_commit[:sha])
+    @branch.update(@current_branch_name, new_commit[:sha])
 
     added_files.clear
 
@@ -34,11 +71,10 @@ class Github
   end
 
   def pull_request(base, title, body)
-    return
     client.create_pull_request(
       @repo,
       base,
-      @current_branch,
+      @current_branch_name,
       title,
       body
     )
@@ -53,12 +89,6 @@ class Github
       { path: path, mode: '100644', type: 'blob', sha: sha }
     end
     changed_blobs
-  end
-
-  def current_branch
-    @current_branches ||= {}
-    return @current_branches[@current_branch] if @current_branches[@current_branch]
-    @current_branches[@current_branch] = client.ref(@repo, "heads/#{@current_branch}")
   end
 
   def create_blob(path)
