@@ -17,6 +17,7 @@ class Github
 
   def checkout(branch)
     @current_branch_name = branch
+    @branch.read(@current_branch_name)
   end
 
   def add(path)
@@ -25,12 +26,11 @@ class Github
 
   def commit(message)
     current_branch = @branch.read(@current_branch_name)
-    commit = client.commit(@repo, current_branch[:object][:sha])
-    current_tree = client.tree(@repo, commit[:commit][:tree][:sha], recursive: true)
-    tree = client.create_tree(@repo, changed_blobs, base_tree: current_tree[:sha])
-    new_commit = client.create_commit(@repo, message, tree[:sha], current_branch[:object][:sha])
-    @branch.update(@current_branch_name, new_commit[:sha])
 
+    tree = create_tree(current_branch[:object][:sha])
+    new_commit = client.create_commit(@repo, message, tree[:sha], current_branch[:object][:sha])
+
+    @branch.update(@current_branch_name, new_commit[:sha])
     added_files.clear
 
     new_commit
@@ -48,18 +48,10 @@ class Github
 
   private
 
-  def changed_blobs
-    changed_blobs = added_files.map do |path|
-      content = Base64.encode64(File.read(path))
-      sha = client.create_blob(@repo, content, 'base64')
-      { path: path, mode: '100644', type: 'blob', sha: sha }
-    end
-    changed_blobs
-  end
-
-  def create_blob(path)
-    content = Base64.encode64(File.read(path))
-    client.create_blob(@repo, content, 'base64')
+  def create_tree(branch_sha)
+    tree_helper = TreeHelper.new(@repo, branch_sha)
+    added_files.each { |path| tree_helper.add(path) }
+    tree_helper.create_tree
   end
 
   def added_files
@@ -99,6 +91,43 @@ class Github
     end
 
     private
+
+    def client
+      ::Octokit::Client.new
+    end
+    memoize :client
+  end
+
+  class TreeHelper
+    include Mem
+
+    def initialize(repo, branch_sha)
+      @repo = repo
+      @branch_sha = branch_sha
+    end
+
+    def add(path)
+      content = Base64.encode64(File.read(path))
+      sha = client.create_blob(@repo, content, 'base64')
+      tree << { path: path, mode: '100644', type: 'blob', sha: sha }
+    end
+
+    def create_tree
+      client.create_tree(@repo, tree, base_tree: current_tree[:sha])
+    end
+
+    private
+
+    def current_tree
+      commit = client.commit(@repo, @branch_sha)
+      client.tree(@repo, commit[:commit][:tree][:sha], recursive: true)
+    end
+    memoize :current_tree
+
+    def tree
+      []
+    end
+    memoize :tree
 
     def client
       ::Octokit::Client.new
