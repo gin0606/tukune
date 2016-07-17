@@ -8,11 +8,6 @@ module Tukune
           puts 'this branch is tukune'
           return
         end
-        unless options[:enable_all] || config.pull_request?
-          puts 'This build is not part of pull request.'
-          puts 'If you want to exec tukune, try to use `--enable-all` option.'
-          return
-        end
         if diff.nothing_to_commit?
           puts 'nothing to commit, working directory clean'
           return

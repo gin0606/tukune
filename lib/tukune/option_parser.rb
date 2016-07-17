@@ -18,10 +18,6 @@ module Tukune
           @target_paths = path
         end
 
-        opt.on('--enable-all') do |enable_all|
-          @enable_all = enable_all
-        end
-
         opt.on('-h', '--help', 'help') do
           puts @opt_parser
         end
@@ -36,7 +32,6 @@ module Tukune
       {
         title: @title,
         body: @body,
-        enable_all: @enable_all,
         target_paths: @target_paths || []
       }
     end
