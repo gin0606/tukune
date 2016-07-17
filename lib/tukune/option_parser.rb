@@ -14,6 +14,10 @@ module Tukune
           @body = body
         end
 
+        opt.on('--target-path V,V...', Array) do |path|
+          @target_paths = path
+        end
+
         opt.on('--enable-all') do |enable_all|
           @enable_all = enable_all
         end
@@ -32,7 +36,8 @@ module Tukune
       {
         title: @title,
         body: @body,
-        enable_all: @enable_all
+        enable_all: @enable_all,
+        target_paths: @target_paths || []
       }
     end
   end

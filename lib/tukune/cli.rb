@@ -3,7 +3,7 @@ module Tukune
     class << self
       def start(options)
         config = Tukune.configuration
-        diff = Tukune::Git::Diff.name_status
+        diff = Tukune::Git::Diff.name_status(options[:target_paths])
         if config.tukune_branch?
           puts 'this branch is tukune'
           return
