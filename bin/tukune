@@ -4,28 +4,7 @@ require 'bundler/setup'
 require 'tukune'
 require 'optparse'
 
-options = {}
-opt_parser = OptionParser.new do |opt|
-  opt.banner = 'Usage: tukune [OPTIONS]'
-  opt.separator  ''
-  opt.separator  'Options'
+parser = Tukune::OptionParser.new
+parser.parse!(ARGV)
 
-  opt.on('-t', '--title TITLE', 'Pull request title') do |title|
-    options[:title] = title
-  end
-
-  opt.on('-b', '--body BODY', 'Pull request body') do |body|
-    options[:body] = body
-  end
-
-  opt.on('--enable-all') do |enable_all|
-    options[:enable_all] = enable_all
-  end
-
-  opt.on('-h', '--help', 'help') do
-    puts opt_parser
-  end
-end
-
-opt_parser.parse!
-Tukune::CLI.start(options)
+Tukune::CLI.start(parser.options)

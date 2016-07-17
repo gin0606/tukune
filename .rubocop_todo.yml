@@ -16,3 +16,4 @@ Metrics/AbcSize:
 Metrics/MethodLength:
   Exclude:
     - lib/tukune/cli.rb
+    - lib/tukune/option_parser.rb
